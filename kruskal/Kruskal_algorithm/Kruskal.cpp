@@ -94,7 +94,8 @@ void readTXT(std::string test = "test1.txt"){
     if (file.is_open()){
         while (getline(file, line)){
             std::cout << line<<std::endl;
-            add_sort();
+            //Falta leer lo que hay en 'line' y dividirlo en 3 para meterlo en add_sort()
+            //add_sort();
             break;
             // Sleep(1000);
         }
