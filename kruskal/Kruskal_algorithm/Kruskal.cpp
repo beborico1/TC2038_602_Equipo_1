@@ -15,10 +15,11 @@
 
 
 #include <iostream>
-#include <fstream> //Library to read what is on a file (in/out)
-#include <cctype> // Provides functions to classify and manipulate individual characters, (adds isspace() function)
-#include <string>
 #include <windows.h> //Not necesary, only for development (adds Sleep() function)
+#include <fstream> //Library to read what is on a file (in/out)
+#include <sstream> 
+#include <string>
+// #include <cctype> // Provides functions to classify and manipulate individual characters, (adds isspace() function)
 
 struct links{
     short weight;
@@ -76,10 +77,12 @@ void add_sort(short weight_, short source_, short destination_){
 
 void print_links(){
     struct links *indice_ = indice; //Create an auxiliary index to iterate through the double linked list
+    short index; index = 1;
     
     while (indice_ != NULL){
-        std::cout<<"Weight: " << indice_->weight << ", Source: " << indice_->source << ", Destination: " << indice_->destination<<std::endl;
+        std::cout<< "[" << index <<"] Weight: " << indice_->weight << ", Source: " << indice_->source << ", Destination: " << indice_->destination<<std::endl;
         indice_ = indice_->next;
+        ++index;
     }
     return;
 }
@@ -93,10 +96,15 @@ void readTXT(std::string test = "test1.txt"){
 
     if (file.is_open()){
         while (getline(file, line)){
-            std::cout << line<<std::endl;
-            //Falta leer lo que hay en 'line' y dividirlo en 3 para meterlo en add_sort()
-            //add_sort();
-            break;
+            short weight_, source_, destination_;
+            // std::cout << line <<std::endl;
+            std::stringstream ssline(line);
+            ssline >> weight_ >> source_ >> destination_;
+            // std::cout << weight_ <<std::endl;
+            // std::cout << source_ <<std::endl;
+            // std::cout << destination_ <<std::endl;
+            add_sort(weight_, source_, destination_);
+            // break;
             // Sleep(1000);
         }
 
@@ -114,8 +122,7 @@ int main(int argc, char* argv[]){
     //     }
     //     else{readTXT(); break;}
     // }
-    readTXT();
-    std::cout<<indice->weight<<std::endl;
+    readTXT("test2.txt");
     print_links();
 
 
