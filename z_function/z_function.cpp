@@ -28,10 +28,14 @@ std::vector <int> getZ (std::string str) {
     return z_vec;
 }
 
-void print_vec(std::vector <int> mi_vec){
-    std::cout<< " After: ";
+void print_ztable(std::vector <int> mi_vec){
+    std::cout<< "Z Table: ";
     for(short i = 0; i < mi_vec.size(); ++i){
-        std::cout<< mi_vec[i];
+        if (i == mi_vec.size() - 1){
+            std::cout<< mi_vec[i];
+        } else {
+            std::cout<< mi_vec[i] << ",";
+        }
     }
     std::cout<<std::endl;
 }
@@ -39,11 +43,21 @@ void print_vec(std::vector <int> mi_vec){
 void getPattern(std::string pattern, std::string main_str){
     std::string concatenated_str = pattern + "$" + main_str;
     std::vector <int> tabla_z = getZ(concatenated_str);
-    print_vec(tabla_z);
+    print_ztable(tabla_z);
+    for (short i = 0; i < tabla_z.size(); ++i){
+        if(tabla_z[i] == pattern.length()){
+            // Quitamos al indice el tamaño del patron y el caracter '$'
+            std::cout<<"Pattern found at index: "<< i - pattern.length() - 1 <<std::endl;
+        }
+    }
 }
 
 int main(){
-    std::cout<<"Before: ABABD"<<"$"<<"ABABCABCABABABD"<<std::endl;
-    getPattern("ABABD", "ABABCABCABABABD");
+    std::string main_str = "ABABD";
+    std::string pattern = "ABABCABCABABABD";
+    std::cout<<"Pattern: " << pattern << std::endl;
+    std::cout<<"Main String: " << main_str << std::endl;
+    std::cout<<"Concatenated String: " << pattern << "$" << main_str << std::endl;
+    getPattern(pattern, main_str);
     return 0;
 }
