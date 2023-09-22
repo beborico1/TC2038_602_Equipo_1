@@ -1,3 +1,14 @@
+/*
+    Authors> 
+        David Medina Domínguez (A01783155)
+        Luis Rico Almada (A01252831)
+        Arantza Parra Matrínez (A01782023) 
+    Date> 21/09/2023
+    Abstract>
+        in this work we implement the z function to find patterns on a string :)
+*/
+
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -28,36 +39,45 @@ std::vector <int> getZ (std::string str) {
     return z_vec;
 }
 
-void print_ztable(std::vector <int> mi_vec){
-    std::cout<< "Z Table: ";
+std::vector <int> getIndexes(std::vector <int> mi_vec, std::string pattern){
+    std::vector <int> indexes;
     for(short i = 0; i < mi_vec.size(); ++i){
-        if (i == mi_vec.size() - 1){
-            std::cout<< mi_vec[i];
-        } else {
-            std::cout<< mi_vec[i] << ",";
+        if(mi_vec[i] == pattern.length()){
+            indexes.push_back(i-pattern.length()-1);
+        }
+    }
+    return indexes;
+}
+
+void print_vec(std::vector <int> mi_vec){
+    for(short i = 0; i < mi_vec.size(); ++i){
+        std::cout<< mi_vec[i];
+        if(i != mi_vec.size()-1){
+            std::cout<<",";
         }
     }
     std::cout<<std::endl;
 }
 
-void getPattern(std::string pattern, std::string main_str){
+std::vector <int> getPattern(std::string pattern, std::string main_str){
     std::string concatenated_str = pattern + "$" + main_str;
     std::vector <int> tabla_z = getZ(concatenated_str);
-    print_ztable(tabla_z);
-    for (short i = 0; i < tabla_z.size(); ++i){
-        if(tabla_z[i] == pattern.length()){
-            // Quitamos al indice el tamaño del patron y el caracter '$'
-            std::cout<<"Pattern found at index: "<< i - pattern.length() - 1 <<std::endl;
-        }
-    }
+    print_vec(tabla_z);
+    return tabla_z;
 }
 
 int main(){
-    std::string main_str = "ABABD";
-    std::string pattern = "ABABCABCABABABD";
-    std::cout<<"Pattern: " << pattern << std::endl;
-    std::cout<<"Main String: " << main_str << std::endl;
-    std::cout<<"Concatenated String: " << pattern << "$" << main_str << std::endl;
-    getPattern(pattern, main_str);
+    std::string pattern = "ABABD";
+    std::string main_str = "ABABCABCABABABD";
+    std::cout<<"Pattern: "<< pattern<<std::endl;
+    std::cout<<"main_str: "<< main_str<<std::endl;
+    std::cout<<"Concatenated string: "<< pattern + "$" + main_str<<std::endl;
+    std::cout<<"Z table: ";
+    std::vector <int> final_vector = getPattern(pattern, main_str);
+    std::vector <int> indexes = getIndexes(final_vector, pattern);
+    std::cout<<"Index where we can find the pattern: ";
+    print_vec(indexes);
+
+
     return 0;
 }
