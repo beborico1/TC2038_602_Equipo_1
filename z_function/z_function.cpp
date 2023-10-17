@@ -1,3 +1,14 @@
+/*
+    Authors> 
+        David Medina Domínguez (A01783155)
+        Luis Rico Almada (A01252831)
+        Arantza Parra Matrínez (A01782023) 
+    Date> 21/09/2023
+    Abstract>
+        in this work we implement the z function to find patterns on a string :)
+*/
+
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -28,22 +39,45 @@ std::vector <int> getZ (std::string str) {
     return z_vec;
 }
 
+std::vector <int> getIndexes(std::vector <int> mi_vec, std::string pattern){
+    std::vector <int> indexes;
+    for(short i = 0; i < mi_vec.size(); ++i){
+        if(mi_vec[i] == pattern.length()){
+            indexes.push_back(i-pattern.length()-1);
+        }
+    }
+    return indexes;
+}
+
 void print_vec(std::vector <int> mi_vec){
-    std::cout<< " After: ";
     for(short i = 0; i < mi_vec.size(); ++i){
         std::cout<< mi_vec[i];
+        if(i != mi_vec.size()-1){
+            std::cout<<",";
+        }
     }
     std::cout<<std::endl;
 }
 
-void getPattern(std::string pattern, std::string main_str){
+std::vector <int> getPattern(std::string pattern, std::string main_str){
     std::string concatenated_str = pattern + "$" + main_str;
     std::vector <int> tabla_z = getZ(concatenated_str);
     print_vec(tabla_z);
+    return tabla_z;
 }
 
 int main(){
-    std::cout<<"Before: ABABD"<<"$"<<"ABABCABCABABABD"<<std::endl;
-    getPattern("ABABD", "ABABCABCABABABD");
+    std::string pattern = "ABABD";
+    std::string main_str = "ABABCABCABABABD";
+    std::cout<<"Pattern: "<< pattern<<std::endl;
+    std::cout<<"main_str: "<< main_str<<std::endl;
+    std::cout<<"Concatenated string: "<< pattern + "$" + main_str<<std::endl;
+    std::cout<<"Z table: ";
+    std::vector <int> final_vector = getPattern(pattern, main_str);
+    std::vector <int> indexes = getIndexes(final_vector, pattern);
+    std::cout<<"Index where we can find the pattern: ";
+    print_vec(indexes);
+
+
     return 0;
 }
