@@ -30,11 +30,6 @@ Ejecutar: ./prueba_1
 
 // todo:
 
-// Búsqueda de subsecuencias
-
-// 1. Analizar si el contenido de los archivos mcode está presente en los archivos transmission. Se lee el contenido de los archivos, pero no hay implementación que verifique si una subsecuencia (mcode) está en las transmisiones.
-// 2. Mostrar resultados. No se muestra ningún resultado relacionado con la búsqueda de subsecuencias.
-
 // Palíndromos en las secuencias de transmisión
 
 // 1. Mostrar en una sola línea dos enteros. Aunque el algoritmo de Manacher's está implementado, no hay código que muestre la posición donde comienza y termina el palíndromo más largo para cada archivo de transmisión.
