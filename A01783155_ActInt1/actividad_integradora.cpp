@@ -46,6 +46,7 @@ Ejecutar: ./prueba_1
 
 // Implementar propio sort para ordenar los sufijos.
 
+// usar mejores nombres para las variables
 // Agregar más comentarios al código.
 
 #include <iostream>
@@ -53,6 +54,14 @@ Ejecutar: ./prueba_1
 #include <fstream>
 #include <string>
 #include <vector>
+
+std::string trim(const std::string& str)
+{
+    size_t start = str.find_first_not_of(" \t\n\r");
+    size_t end = str.find_last_not_of(" \t\n\r");
+
+    return (start == std::string::npos) ? "" : str.substr(start, end-start+1);
+}
 
 std::string readTXT(std::string test)
 {
@@ -72,7 +81,7 @@ std::string readTXT(std::string test)
     else
         std::cout << "Unable to open file";
 
-    return content;
+    return trim(content);
 }
 
 // Knuth-Morris-Pratt (KMP)
@@ -80,27 +89,27 @@ std::vector<int> calcularTablaPrefijoSufijo(const std::string &patron)
 {
     int longitud = patron.length();
     std::vector<int> lps(longitud, 0);
-    int longitudActual = 0;
-    int indice = 1;
+    int len = 0;  // longitud del prefijo/sufijo actual
+    int i = 1;
 
-    while (indice < longitud)
+    while (i < longitud)
     {
-        if (patron[indice] == patron[longitudActual])
+        if (patron[i] == patron[len])
         {
-            longitudActual++;
-            lps[indice] = longitudActual;
-            indice++;
+            len++;
+            lps[i] = len;
+            i++;
         }
         else
         {
-            if (longitudActual != 0)
+            if (len != 0)
             {
-                longitudActual = lps[longitudActual - 1];
+                len = lps[len - 1];
             }
             else
             {
-                lps[indice] = 0;
-                indice++;
+                lps[i] = 0;
+                i++;
             }
         }
     }
@@ -111,32 +120,32 @@ int buscarSubsecuenciaKMP(const std::string &texto, const std::string &patron)
 {
     int longitudTexto = texto.length();
     int longitudPatron = patron.length();
-
-    if (longitudPatron > longitudTexto)
-        return -1; // el patron no puede ser mas largo que el texto
-
     std::vector<int> lps = calcularTablaPrefijoSufijo(patron);
-    int j = 0; // indice para el patrón
+    int i = 0;  // índice para el texto
+    int j = 0;  // índice para el patrón
 
-    for (int i = 0; i < longitudTexto; i++)
+    while (i < longitudTexto)
     {
-        while (j > 0 && texto[i] != patron[j])
-        {
-            j = lps[j - 1];
-        }
-
-        if (texto[i] == patron[j])
+        if (patron[j] == texto[i])
         {
             j++;
+            i++;
         }
 
         if (j == longitudPatron)
         {
-            return i - (longitudPatron - 1); // retorna la posicion inicial donde comienza el patron en el texto
+            return i - j;
+        }
+        else if (i < longitudTexto && patron[j] != texto[i])
+        {
+            if (j != 0)
+                j = lps[j - 1];
+            else
+                i = i + 1;
         }
     }
 
-    return -1; // no encontrado
+    return -1;  // no encontrado
 }
 
 // Manacher's
