@@ -26,7 +26,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <fstream> // stringstream library
+#include <fstream> // Stringstream library
 #include <string>
 
 void readTXT(std::string test /*std::string test = "mcode1.txt"*/)
