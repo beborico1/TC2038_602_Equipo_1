@@ -29,25 +29,32 @@
 #include <fstream> // Stringstream library
 #include <string>
 
-void readTXT(std::string test /*std::string test = "mcode1.txt"*/)
+std::string readTXT(std::string test /*std::string test = "mcode1.txt"*/)
 {
     std::string line;
+    std::string content;
     std::ifstream file(test);
 
     if (file.is_open())
     {
-        while (getline(file, line))
+        while (getline(file, line)) // por cada linea
         {
             std::cout << line << std::endl;
+            content += line + "\n"; // concatenar la line y una nueva (\n)
         }
         file.close(); // Close the file
     }
     else std::cout << "Unable to open file";
+
+    return content;
 }
 
 int main(int argc, char const *argv[])
 {
-    std::cout << "Hello world" << std::endl;
-    readTXT("mcode1.txt");
+    std::string transmission1 = readTXT("transmission1.txt");
+    std::string transmission2 = readTXT("transmission2.txt");
+    std::string mcode1 = readTXT("mcode1.txt");
+    std::string mcode2 = readTXT("mcode2.txt");
+    std::string mcode3 = readTXT("mcode3.txt");
     return 0;
 }
