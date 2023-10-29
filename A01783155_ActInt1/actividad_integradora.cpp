@@ -40,8 +40,7 @@ void readTXT(std::string test /*std::string test = "mcode1.txt"*/)
         {
             std::cout << line << std::endl;
         }
-        // Close the file
-        file.close();
+        file.close(); // Close the file
     }
     else std::cout << "Unable to open file";
 }
