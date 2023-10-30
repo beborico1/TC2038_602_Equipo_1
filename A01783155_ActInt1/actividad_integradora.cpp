@@ -83,12 +83,6 @@ int  KMPSearch(const std::string text, const std::string pattern) {
     // obtener la tabla 'pi' para el patrón
     std::vector<int> pi = getPi(pattern); 
 
-    // std::cout << "Tabla pi del patrón: " << std::endl;
-    // for (int pi_index = 0; pi_index < pi.size(); pi_index++) {
-    //     std::cout << pi[pi_index] << " ";
-    // }
-    // std::cout << std::endl;
-
     int text_index = 0; // índice para el texto
     int pattern_index = 0; // índice para el patrón
 
@@ -114,7 +108,7 @@ int  KMPSearch(const std::string text, const std::string pattern) {
     return -1;
 }
 // Busca secuencia de mcode en fragmento de transmission y regresa la posición donde se encuentra
-void FindSecuence(const std::string transmission, const std::string mcode1, const std::string mcode2, const std::string mcode3) {
+void FindSequence(const std::string transmission, const std::string mcode1, const std::string mcode2, const std::string mcode3) {
     int position;
 
     position = KMPSearch(transmission, mcode1);
@@ -149,6 +143,6 @@ int main(int argc, char const *argv[])
     std::string mcode1 = readTXT("mcode1.txt");
     std::string mcode2 = readTXT("mcode2.txt");
     std::string mcode3 = readTXT("mcode3.txt");
-    FindSecuence(transmission, mcode1, mcode2, mcode3);
-    FindSecuence(transmission2, mcode1, mcode2, mcode3);
+    FindSequence(transmission, mcode1, mcode2, mcode3);
+    FindSequence(transmission2, mcode1, mcode2, mcode3);
 }
