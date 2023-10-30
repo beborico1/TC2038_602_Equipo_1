@@ -136,7 +136,6 @@ void FindSequence(const std::string transmission, const std::string mcode1, cons
 // Parte #2: Códigos Espejeados (Manacher)
 std::string agregarSignosDeDolar(std::string str) {
     std::string str_con_signos = "$";
-    std::cout << "$ ";
     for (short i = 0; i < str.length(); ++i) {
         str_con_signos += str[i];
         str_con_signos += "$";
