@@ -40,7 +40,7 @@ std::string readTXT(std::string test /*std::string test = "mcode1.txt"*/)
     {
         while (getline(file, line))
         {
-            wholeFile << line << '\n';
+            wholeFile << line;
         }
         file.close(); // Close the file
     }
