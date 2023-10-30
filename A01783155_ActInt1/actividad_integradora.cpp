@@ -47,7 +47,7 @@ std::string readTXT(std::string test /*std::string test = "mcode1.txt"*/)
     else std::cout << "Unable to open file";
     return wholeFile.str();
 }
-// Parte #1: Códigos maliciosos
+// Parte #1: Códigos maliciosos (KMP)
 // Función para construir la tabla 'pi' para el algoritmo KMP.
 std::vector <int> getPi (std::string pattern) {
     int pattern_length = pattern.length();
@@ -133,6 +133,45 @@ void FindSequence(const std::string transmission, const std::string mcode1, cons
     }
 }
 
+// Parte #2: Códigos Espejeados (Manacher)
+std::string agregarSignosDeDolar(std::string str) {
+    std::string str_con_signos = "$";
+    std::cout << "$ ";
+    for (short i = 0; i < str.length(); ++i) {
+        str_con_signos += str[i];
+        str_con_signos += "$";
+    }
+    return str_con_signos;
+}
+
+std::vector<int> manacher(std::string str) {
+    std::string str_con_signos = agregarSignosDeDolar(str);
+    std::vector<int> tabla_l(str_con_signos.length(), 0);
+    int l, r = 0;
+    for (short c = 1; c < str_con_signos.length(); c++) {
+        l = c - 1; r = c + 1;
+        while (l > 1 && r < str_con_signos.length() && str_con_signos[l] == str_con_signos[r]) {
+            l--; r++;
+        }
+        tabla_l[c] = r - c - 1;
+    }
+    return tabla_l;
+}
+void FindLargeMirrorCode(std::string transmission) {
+    std::vector<int> tabla_l = manacher(transmission);
+    int max_len = 0;
+    int max_index = 0;
+    for (int i = 0; i < tabla_l.size(); i++) {
+        if (tabla_l[i] > max_len) {
+            max_len = tabla_l[i];
+            max_index = i;
+        }
+    }
+    int startP = (max_index - max_len) / 2;
+    int endP = startP + max_len - 1;
+    std::cout << startP + 1 << " " << endP + 1 << std::endl;
+}
+
 
 int main(int argc, char const *argv[])
 {
@@ -145,4 +184,5 @@ int main(int argc, char const *argv[])
     std::string mcode3 = readTXT("mcode3.txt");
     FindSequence(transmission, mcode1, mcode2, mcode3);
     FindSequence(transmission2, mcode1, mcode2, mcode3);
+    FindLargeMirrorCode(transmission);
 }
