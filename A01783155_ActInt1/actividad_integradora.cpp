@@ -33,19 +33,22 @@
 std::string readTXT(std::string test /*std::string test = "mcode1.txt"*/)
 {
     std::string line;
+    std::string content;
     std::ifstream file(test);
     std::ostringstream wholeFile; 
 
     if (file.is_open())
     {
-        while (getline(file, line))
+        while (getline(file, line)) // por cada linea
         {
             wholeFile << line;
         }
         file.close(); // Close the file
     }
     else std::cout << "Unable to open file";
+
     return wholeFile.str();
+
 }
 // Parte #1: Códigos maliciosos (KMP)
 // Función para construir la tabla 'pi' para el algoritmo KMP.
@@ -184,4 +187,5 @@ int main(int argc, char const *argv[])
     FindSequence(transmission, mcode1, mcode2, mcode3);
     FindSequence(transmission2, mcode1, mcode2, mcode3);
     FindLargeMirrorCode(transmission);
+    return 0;
 }
