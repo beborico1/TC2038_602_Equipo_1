@@ -29,6 +29,8 @@
 #include <fstream> // Stringstream library
 #include <string>
 #include <vector>
+#include <algorithm>
+
 
 std::string readTXT(std::string test /*std::string test = "mcode1.txt"*/)
 {
@@ -50,6 +52,7 @@ std::string readTXT(std::string test /*std::string test = "mcode1.txt"*/)
     return wholeFile.str();
 
 }
+
 // Parte #1: Códigos maliciosos (KMP)
 // Función para construir la tabla 'pi' para el algoritmo KMP.
 std::vector <int> getPi (std::string pattern) {
@@ -174,18 +177,118 @@ void FindLargeMirrorCode(std::string transmission) {
     std::cout << startP + 1 << " " << endP + 1 << std::endl;
 }
 
+void print_vec(std::vector <int> mi_vec){
+    for(short i = 0; i < mi_vec.size(); ++i){
+        std::cout<< mi_vec[i];
+        if(i != mi_vec.size()-1){
+            std::cout<<",";
+        }
+    }
+    std::cout<<std::endl;
+}
+
+// Función para construir el Suffix Array (una versión simplificada del algoritmo de Manber y Myers)
+std::vector<int> constructSA(const std::string& s) {
+    int n = s.size();
+    std::vector<int> sa(n), rank(n), tempRank(n);
+    for (int i = 0; i < n; i++) {
+        sa[i] = i;
+        rank[i] = s[i];
+    }
+    
+    for (int k = 1; k < n; k *= 2) {
+        auto cmp = [&](int i, int j) {
+            if (rank[i] != rank[j]) return rank[i] < rank[j];
+            int ri = (i + k < n) ? rank[i + k] : -1;
+            int rj = (j + k < n) ? rank[j + k] : -1;
+            return ri < rj;
+        };
+        sort(sa.begin(), sa.end(), cmp);
+        
+        tempRank[sa[0]] = 0;
+        for (int i = 1; i < n; i++) {
+            tempRank[sa[i]] = tempRank[sa[i-1]] + (cmp(sa[i-1], sa[i]) ? 1 : 0);
+        }
+        rank = tempRank;
+    }
+    // std::cout<<"SA: ";
+    // print_vec(sa);
+    // std::cout<<"rank: ";
+    // print_vec(rank);
+    return sa;
+}
+
+// Función para construir el array LCP
+std::vector<int> constructLCP(const std::string& s, const std::vector<int>& sa) {
+    int n = s.size();
+    std::vector<int> rank(n), lcp(n-1);
+    for (int i = 0; i < n; i++) {
+        rank[sa[i]] = i;
+    }
+
+    int k = 0;
+    for (int i = 0; i < n; i++) {
+        if (rank[i] == n - 1) {
+            k = 0;
+            continue;
+        }
+        int j = sa[rank[i] + 1];
+        while (i + k < n && j + k < n && s[i+k] == s[j+k]) k++;
+        lcp[rank[i]] = k;
+        if (k > 0) k--;
+    }
+
+    // Encontrar el LCP mas grande
+    int maxLCP = 0;
+    int maxLCPIndex = 0;
+    for (int i = 0; i < lcp.size(); i++) {
+        if (lcp[i] > maxLCP) {
+            maxLCP = lcp[i];
+            maxLCPIndex = i;
+        }
+    }
+
+    // Calcula el indice del inicio y el final del LCP mas grande 
+    int startLCP = sa[maxLCPIndex] + 1; //Arreglar el que indice inicial sea 1
+    int endLCP = startLCP + maxLCP - 1; //Arreglar el que indice inicial sea 1
+
+    std::cout << startLCP << " " << endLCP << std::endl;
+    return lcp;
+}
+
 
 int main(int argc, char const *argv[])
 {
-    // std::cout << "Hello world" << std::endl;
-    // readTXT("mcode1.txt");
+    //Lectura de archivos
     std::string transmission = readTXT("transmission1.txt");
-     std::string transmission2 = readTXT("transmission2.txt");
+    std::string transmission2 = readTXT("transmission2.txt");
     std::string mcode1 = readTXT("mcode1.txt");
     std::string mcode2 = readTXT("mcode2.txt");
     std::string mcode3 = readTXT("mcode3.txt");
+
+
+    //Pruebas parte #1
+    std::cout << "----- Parte #1: Códigos maliciosos -----" << std::endl;
+    std::cout << "Transmisión #1" << std::endl;
     FindSequence(transmission, mcode1, mcode2, mcode3);
+    std::cout << "Transmisión #2" << std::endl;
     FindSequence(transmission2, mcode1, mcode2, mcode3);
+
+
+    //Pruebas parte #2
+    std::cout << "----- Parte #2: Códigos Espejeados -----" << std::endl;
+    std::cout << "Transmisión #1" << std::endl;
     FindLargeMirrorCode(transmission);
+    std::cout << "Transmisión #2" << std::endl;
+    FindLargeMirrorCode(transmission2);
+
+    
+    //Pruebas parte #3
+    std::cout << "----- Parte #3: Códigos Semejantes -----" << std::endl;
+    std::string s = transmission + "#"+ transmission2 + "$";
+    // std::cout << s << std::endl;
+    std::vector<int> sa = constructSA(s);
+    std::vector<int> lcp = constructLCP(s, sa);
+
     return 0;
 }
