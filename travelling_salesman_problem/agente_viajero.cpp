@@ -84,7 +84,10 @@ int get_hamiltonian_cycle(const int (&arr)[rows][columns]){
         chosenColumns.push_back(col);
         result += weight;
     }
-
+    for(int column : chosenColumns){
+        std::cout << column << "->";
+    }
+        std::cout << chosenColumns[0] << std::endl;
     return result;
 }
 
