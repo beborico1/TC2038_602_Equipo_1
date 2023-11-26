@@ -143,9 +143,6 @@ void readTXT(std::string filename = "test1.txt")
             }
         }
     }
-
-    // Omitir la lectura de las coordenadas de las centrales si no se utilizan en el algoritmo
-    // Si se necesitan más adelante, aquí se añadiría el código para leerlas
 }
 //Function to delete the linked list
 void delete_links(links *index = indice)
