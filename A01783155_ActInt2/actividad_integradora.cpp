@@ -115,38 +115,29 @@ void add_sort(short weight_, short source_, short destination_)
     link_->previous = _indice;
     _indice->next = link_;
     return;
+    
 }
 
-// Lee archivo de texto con la matriz de adyacencias
-void readTXT(std::string filename = "test1.txt")
-{
+// Lee archivo de texto con la matriz de adyacencias 
+void readTXT(std::string filename, std::vector<std::vector<int> >& adj_matrix, int& N) {
     std::ifstream file(filename);
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         std::cout << "Unable to open file";
         return;
     }
 
-    int N;
-    file >> N; // Leer el número de colonias
+    file >> N; // Leer el número de nodos y establecer el tamaño de adj_matrix
+    adj_matrix.resize(N, std::vector<int>(N, 0)); // Redimensiona la matriz según el número de nodos
 
-    // Leer la matriz de adyacencias 
-    for (int i = 0; i < N; ++i)
-    {
-        for (int j = 0; j < N; ++j)
-        {
-            int weight;
+    int weight;
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
             file >> weight;
-            if (weight != 0 && i < j) 
-            {
-                add_sort(weight, i, j);
-            }
+            adj_matrix[i][j] = weight;
         }
     }
-
-    // Omitir la lectura de las coordenadas de las centrales si no se utilizan en el algoritmo
-    // Si se necesitan más adelante, aquí se añadiría el código para leerlas
 }
+
 //Function to delete the linked list
 void delete_links(links *index = indice)
 {
@@ -266,14 +257,63 @@ void print_mst(links *mst)
     }
 }
 //  Parte #2: Visita de colonias (TSP)
+// Revisa si un valor está en el vector
+bool in_array(int value, const std::vector<int>& arr){
+    for(int i = 0; i < arr.size(); ++i){
+        if(arr[i] == value)
+            return true;
+    }
+    return false;
+}
+// TSP
+void get_hamiltonian_cycle(int N, const std::vector<std::vector<int> >& arr) {
+    int max_weight = std::numeric_limits<int>::max();
+    std::vector<int> chosenColumns;
+    int result = 0;
+
+    chosenColumns.push_back(0); // Comenzar desde la primera ciudad 'A'
+    int last = 0;
+
+    // Recorrer todas las ciudades
+    for (int i = 0; i < N - 1; ++i) {  
+        int weight = max_weight;
+        int col = -1;
+        for (int j = 0; j < N; ++j) {
+            // Comprobar si es la arista de menor peso y si la ciudad no ha sido visitada.
+            if (arr[last][j] < weight && !in_array(j, chosenColumns)) {
+                col = j;
+                weight = arr[last][j];
+            }
+        }
+        if (col != -1) {
+            chosenColumns.push_back(col);
+            result += weight;
+            last = col;
+        }
+    }
+
+    // Asegurar que el ciclo se complete volviendo a la primera ciudad.
+    result += arr[last][0];
+    chosenColumns.push_back(0);
+
+    // Imprimir la ruta
+    std::cout << "Ruta más corta: ";
+    for (int i = 0; i < chosenColumns.size(); ++i) {
+        std::cout << char('A' + chosenColumns[i]);
+        if (i < chosenColumns.size() - 1) std::cout << " -> ";
+    }
+    std::cout << "\nCosto total del recorrido: " << result << std::endl;
+}
 
 
 //  Parte #3: Centrales de servicio (Euclidean)
 int main(int argc, char *argv[])
 {
+    std::vector<std::vector<int> > adj_matrix; // Faltaba declarar adj_matrix
+    int N; 
     //Lectura de archivos
     initialize_parent();
-    readTXT("test1.txt");
+    readTXT("test1.txt", adj_matrix, N);
     
      //Pruebas parte #1
     links *mst = kruskal_algorithm(indice);
@@ -286,6 +326,7 @@ int main(int argc, char *argv[])
 
     //Pruebas parte #2
     std::cout << "----- Parte #2: Visita de colonias -----" << std::endl;
-    
+    get_hamiltonian_cycle(N, adj_matrix);
+   
     return 0;
 }
