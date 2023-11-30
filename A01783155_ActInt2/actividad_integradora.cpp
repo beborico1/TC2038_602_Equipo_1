@@ -11,25 +11,24 @@
             problema 2.
     Parte #1:
         El programa debe leer un archivo de entrada que contiene la información de un grafo representado en forma de una matriz de adyacencias
-        con grafos ponderados. El peso de cada arista es la distancia en kilómetros entre colonia y colonia, por donde es factible meter 
+        con grafos ponderados. El peso de cada arista es la distancia en kilómetros entre colonia y colonia, por donde es factible meter
         cableado.
         El programa debe desplegar cuál es la forma óptima de cablear con fibra óptica conectando colonias de tal forma que se pueda compartir
         información entre cuales quiera dos colonias.
     Parte #2:
-        Debido a que las ciudades apenas están entrando al mundo tecnológico, se requiere que alguien visite cada colonia para ir a dejar estados 
+        Debido a que las ciudades apenas están entrando al mundo tecnológico, se requiere que alguien visite cada colonia para ir a dejar estados
         de cuenta físicos, publicidad,avisos y notificaciones impresos. por eso se quiere saber ¿cuál es la ruta más corta posible que visita
         cada colonia exactamente una vez y al finalizar regresa a la colonia origen?
-        El programa debe desplegar la ruta a considerar, tomando en cuenta que la primera ciudad se le llamará A, a la segunda B, y así 
+        El programa debe desplegar la ruta a considerar, tomando en cuenta que la primera ciudad se le llamará A, a la segunda B, y así
         sucesivamente.
 
     Parte #3:
-         Teniendo en cuenta la ubicación geográfica de varias "centrales" a las que se pueden conectar nuevas casas, la empresa quiere contar 
-         con una forma de decidir, dada una nueva contratación del servicio, cuál es la central más cercana geográficamente a esa nueva 
-         contratación. No necesariamente hay una central por cada colonia. Se pueden tener colonias sin central, y colonias con más de una 
+         Teniendo en cuenta la ubicación geográfica de varias "centrales" a las que se pueden conectar nuevas casas, la empresa quiere contar
+         con una forma de decidir, dada una nueva contratación del servicio, cuál es la central más cercana geográficamente a esa nueva
+         contratación. No necesariamente hay una central por cada colonia. Se pueden tener colonias sin central, y colonias con más de una
          central.
 
 */
-
 
 #include <iostream>
 #include <fstream> //Library to read what is on a file (in/out)
@@ -37,7 +36,9 @@
 #include <string>
 #include <vector>
 #include <limits>
-
+#include <cmath>
+#include <utility>
+#include <algorithm>
 
 // Parte #1: Cableado de fibra óptica (Kruskal)
 
@@ -51,12 +52,12 @@ struct links
     struct links *previous;
 };
 // Head of the linked list
-struct links *indice = NULL; 
+struct links *indice = NULL;
 const int MAX_NODOS = 100;
-//Array that stores the parent of each node
+// Array that stores the parent of each node
 int rank[MAX_NODOS];
 
-//Function to add a link to the linked list in a sorted way (by weight)
+// Function to add a link to the linked list in a sorted way (by weight)
 void add_sort(short weight_, short source_, short destination_)
 {
     links *link_;
@@ -73,9 +74,9 @@ void add_sort(short weight_, short source_, short destination_)
     link_->destination = destination_;
 
     // Create an auxiliary index (leading) to iterate through the double linked list
-    struct links *indice_ = indice; 
-     // Create another auxiliary index (following)
-    struct links *_indice = NULL;  
+    struct links *indice_ = indice;
+    // Create another auxiliary index (following)
+    struct links *_indice = NULL;
 
     // If it is going to be the first link to be added
     if (indice == NULL)
@@ -130,21 +131,22 @@ void readTXT(std::string filename = "test1.txt")
     int N;
     file >> N; // Leer el número de colonias
 
-    // Leer la matriz de adyacencias 
+    // Leer la matriz de adyacencias
     for (int i = 0; i < N; ++i)
     {
         for (int j = 0; j < N; ++j)
         {
             int weight;
             file >> weight;
-            if (weight != 0 && i < j) 
+            if (weight != 0 && i < j)
             {
                 add_sort(weight, i, j);
             }
         }
     }
 }
-//Function to delete the linked list
+
+// Function to delete the linked list
 void delete_links(links *index = indice)
 {
     if (index != NULL)
@@ -155,7 +157,7 @@ void delete_links(links *index = indice)
     }
 }
 
-//Function to find the parent of a node in a disjoint set
+// Function to find the parent of a node in a disjoint set
 int find_set(int i)
 {
     // If the node is its own parent, it returns it
@@ -169,20 +171,19 @@ int find_set(int i)
         return result;
     }
 }
-//Function to unite two disjoint sets
+// Function to unite two disjoint sets
 void union_sets(int source, int destination)
 {
     int source_parent = find_set(source);
     int destination_parent = find_set(destination);
 
-
-    //If the nodes are not in the same set, it unites them
+    // If the nodes are not in the same set, it unites them
     if (source_parent != destination_parent)
     {
         rank[destination_parent] = source_parent;
     }
 }
-//Function to add a link to the linked list
+// Function to add a link to the linked list
 void add_link_to_list(links *&list, short weight, short source, short destination)
 {
     links *link_ = new links;
@@ -225,7 +226,7 @@ links *kruskal_algorithm(links *indice)
     // Return the result list
     return kruskal_list;
 }
-//Function to initialize the rank array so that each node is its own parent
+// Function to initialize the rank array so that each node is its own parent
 void initialize_parent()
 {
     for (int i = 0; i < MAX_NODOS; i++)
@@ -264,25 +265,98 @@ void print_mst(links *mst)
 }
 //  Parte #2: Visita de colonias (TSP)
 
-
 //  Parte #3: Centrales de servicio (Euclidean)
+double euclideanDistance(std::pair<int, int> a, std::pair<int, int> b)
+{
+    return sqrt(pow(a.first - b.first, 2) + pow(a.second - b.second, 2));
+}
+
+void nearestServer(std::vector<std::pair<int, int>> &servers, std::pair<int, int> location)
+{
+    double minDist = INFINITY;
+    int closestServer = -1;
+
+    for (int i = 0; i < servers.size(); i++)
+    {
+        double dist = euclideanDistance(servers[i], location);
+        if (dist < minDist)
+        {
+            minDist = dist;
+            closestServer = i;
+        }
+    }
+
+    std::cout << "La central más cercana está en " << servers[closestServer].first << ", "
+              << servers[closestServer].second << " con distancia " << minDist << std::endl;
+}
+
+// Nueva función para leer las ubicaciones de las centrales
+std::vector<std::pair<int, int>> readCentrals(std::ifstream &file, int N)
+{
+    std::vector<std::pair<int, int>> centrals;
+    for (int i = 0; i < N; ++i)
+    {
+        std::string line;
+        std::getline(file, line);
+        std::istringstream iss(line);
+
+        int x, y;
+        char leftParen, comma, rightParen;
+        iss >> leftParen >> x >> comma >> y >> rightParen;
+        centrals.push_back(std::make_pair(x, y));
+    }
+    return centrals;
+}
+
 int main(int argc, char *argv[])
 {
-    //Lectura de archivos
+    // Lectura de archivos
     initialize_parent();
     readTXT("test1.txt");
-    
-     //Pruebas parte #1
+
+    // Pruebas parte #1
     links *mst = kruskal_algorithm(indice);
     std::cout << "----- Parte #1: Cableado de colonias -----" << std::endl;
     print_mst(mst);
     print_links(mst);
-    //Free memory
+    // Free memory
     delete_links(indice);
     delete_links(mst);
 
-    //Pruebas parte #2
-    std::cout << "----- Parte #2: Visita de colonias -----" << std::endl;
-    
-    return 0;
+    // Pruebas parte #2
+    //  std::cout << "----- Parte #2: Visita de colonias -----" << std::endl;
+
+    // Parte #3: Lectura de las ubicaciones de las centrales
+    std::ifstream file("test1.txt");
+    if (!file)
+    {
+        std::cout << "Error al abrir el archivo." << std::endl;
+        return 1; // Termina el programa si hay un error al abrir el archivo
+    }
+
+    int N;
+    file >> N; // Leer el número de colonias
+
+    // Saltar la matriz de adyacencias
+    std::string line;
+    std::getline(file, line); // Consume el salto de línea restante después de leer N
+    for (int i = 0; i < N; ++i)
+    {
+        std::getline(file, line); // Lee cada línea de la matriz y la descarta
+    }
+
+    std::cout << "Leyendo ubicaciones de las centrales..." << std::endl;
+    std::vector<std::pair<int, int>> centrals = readCentrals(file, N);
+
+    // Imprimir las ubicaciones de las centrales para depuración
+    for (const auto &central : centrals)
+    {
+        std::cout << "Central: (" << central.first << ", " << central.second << ")" << std::endl;
+    }
+
+    // Supongamos que quieres encontrar la central más cercana a una ubicación específica
+    std::pair<int, int> location_test = {0, 10};
+    std::cout << "Buscando la central más cercana a la ubicación ("
+              << location_test.first << ", " << location_test.second << ")" << std::endl;
+    nearestServer(centrals, location_test);
 }
