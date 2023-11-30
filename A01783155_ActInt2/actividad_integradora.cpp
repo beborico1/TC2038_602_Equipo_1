@@ -3,8 +3,8 @@
         David Medina Domínguez (A01783155)
         Luis Rico Almada (A01252831)
         Arantza Parra Matrínez (A01782023)
-    Fecha> 26/11/2023
-    Abstract>
+
+    Fecha> 30/11/2023
 
     Instrucciones>
             Escribe en C++ un programa que ayude a una empresa que quiere incursionar en los servicios de Internet respondiendo a la situación
@@ -40,7 +40,7 @@
 #include <utility>
 #include <algorithm>
 
-// Parte #1: Cableado de fibra óptica (Kruskal)
+// Parte #1: Cableado de fibra óptica (Kruskal) -----------------------------------------------------------------------------------------
 
 // Define the structure representing each link
 struct links
@@ -119,17 +119,19 @@ void add_sort(short weight_, short source_, short destination_)
 }
 
 // Lee archivo de texto con la matriz de adyacencias
-void readTXT(std::string filename = "test1.txt")
+std::vector<std::vector<int>> readTXT(std::string filename = "test1.txt")
 {
     std::ifstream file(filename);
     if (!file.is_open())
     {
         std::cout << "Unable to open file";
-        return;
+        return std::vector<std::vector<int>>();
     }
 
     int N;
-    file >> N; // Leer el número de colonias
+    file >> N; // Leer el número de columnas y filas
+
+    std::vector<std::vector<int>> matrix(N, std::vector<int>(N, 0));
 
     // Leer la matriz de adyacencias
     for (int i = 0; i < N; ++i)
@@ -138,12 +140,14 @@ void readTXT(std::string filename = "test1.txt")
         {
             int weight;
             file >> weight;
-            if (weight != 0 && i < j)
-            {
+            matrix[i][j] = weight;
+            if (weight != 0 && i < j){
                 add_sort(weight, i, j);
             }
         }
     }
+
+    return matrix;
 }
 
 // Function to delete the linked list
@@ -263,9 +267,66 @@ void print_mst(links *mst)
         mst = mst->next;
     }
 }
-//  Parte #2: Visita de colonias (TSP)
+//  Parte #2: Visita de colonias (TSP) --------------------------------------------------------------------------------------------------
+int get_relaxed_weight(const std::vector<std::vector<int>>& matrix){
+    int max_weight = std::numeric_limits<int>::max();
+    int relaxed_weight = 0;
 
-//  Parte #3: Centrales de servicio (Euclidean)
+    for(int i = 0; i < matrix.size(); ++i){
+        int relaxed_col = max_weight;
+        for(int j = 0; j < matrix.size(); ++j){
+            if(matrix[i][j] <= relaxed_col && matrix[i][j] != 0)
+                relaxed_col = matrix[i][j]; 
+        }
+        relaxed_weight += relaxed_col; 
+    }
+    
+    return relaxed_weight;
+}
+
+bool in_array(int value, const std::vector<int>& arr){
+    for(int i = 0; i < arr.size(); ++i){
+        if(arr[i] == value)
+            return true;
+    }
+    return false;
+}
+
+int get_hamiltonian_cycle(const std::vector<std::vector<int>>& matrix){
+    int max_weight = std::numeric_limits<int>::max();
+    int result = 0;
+    std::vector<int> chosenColumns;
+
+    for(int i = 0; i < matrix.size(); ++i){  
+        int weight = max_weight;
+        int col = 0;
+        for(int j = 0; j < matrix.size(); ++j){
+            if(matrix[i][j] <= weight  && matrix[i][j] != 0 && !in_array(j, chosenColumns)){
+                col = j;
+                weight = matrix[i][j];
+            }
+        }
+        chosenColumns.push_back(col);
+        // std::cout << "weight: " << weight << std::endl;
+        result += weight;
+    }
+    for(int column : chosenColumns){
+        std::cout << column << "->";
+    }
+        std::cout << chosenColumns[0] << std::endl;
+    return result;
+}
+
+void print_matrix(const std::vector<std::vector<int>>& matrix){
+    for(int i = 0; i < matrix.size(); ++i){
+            for(int j = 0; j < matrix.size(); ++j)
+                std::cout<<matrix[i][j]<<" ";
+            std::cout<<std::endl;
+    }
+}
+
+
+//  Parte #3: Centrales de servicio (Euclidean) -----------------------------------------------------------------------------------------
 double euclideanDistance(std::pair<int, int> a, std::pair<int, int> b)
 {
     return sqrt(pow(a.first - b.first, 2) + pow(a.second - b.second, 2));
@@ -312,7 +373,7 @@ int main(int argc, char *argv[])
 {
     // Lectura de archivos
     initialize_parent();
-    readTXT("test1.txt");
+    std::vector<std::vector<int>> matrix = readTXT("test1.txt");
 
     // Pruebas parte #1
     links *mst = kruskal_algorithm(indice);
@@ -324,9 +385,20 @@ int main(int argc, char *argv[])
     delete_links(mst);
 
     // Pruebas parte #2
-    //  std::cout << "----- Parte #2: Visita de colonias -----" << std::endl;
+    std::cout<<std::endl;
+    std::cout << "----- Parte #2: Visita de colonias -----" << std::endl;
+    std::cout<< "Matrix: " <<std::endl;
+    print_matrix(matrix);
+
+    std::cout<< "Relaxed Weight: " <<std::endl;
+    std::cout <<  get_relaxed_weight(matrix) << std::endl; 
+
+    std::cout<< "Hamiltonian Cycle: " <<std::endl;
+    std::cout <<  get_hamiltonian_cycle(matrix) << std::endl; 
 
     // Parte #3: Lectura de las ubicaciones de las centrales
+    std::cout<<std::endl;
+    std::cout << "----- Parte #3: Ubicaciones centrales -----" << std::endl;
     std::ifstream file("test1.txt");
     if (!file)
     {

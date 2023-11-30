@@ -18,7 +18,7 @@
 #include <vector>
 #include <limits> //Solo para encontrar el numero mas grande de un tipo de dato
 
-int test_arr[5][5] = {
+std::vector<std::vector<int>> test_arr = {
     {0, 10, 15, 20, 25},
     {10, 0, 35, 25, 30},
     {15, 35, 0, 30, 20},
@@ -27,29 +27,26 @@ int test_arr[5][5] = {
 };
 
 int test_arr_indexes[10] = {0, 1, 1, 2, 2, 3, 3, 4, 4, 0};
-// void get_relaxed_weight(const std::array<std::array<int, colums>, rows>& arr){ //Por si queremos crear nuestro array desde un txt, mabe
 
-template <int columns, int rows, int index> // Otra opcion es: size_t, y asi no definirlo, dejarselo al compilador
-int get_sum_of_indexes(const int (&arr)[rows][columns], const int (&arr_indexes)[index]){
-    int sum = 0;
-    // rows, columns y index deberian de tener el mismo valor
-    for(int i = 0; i < index; i += 2){
-        sum += arr[arr_indexes[i]][arr_indexes[i+1]];
-    }
-    return sum;
-}
+// template <int columns, int rows, int index>
+// int get_sum_of_indexes(const int (&arr)[rows][columns], const int (&arr_indexes)[index]){
+//     int sum = 0;
+//     // rows, columns y index deberian de tener el mismo valor
+//     for(int i = 0; i < index; i += 2){
+//         sum += arr[arr_indexes[i]][arr_indexes[i+1]];
+//     }
+//     return sum;
+// }
 
-template <int columns, int rows> // Estos son un template que seran remplazados por el correcto type cuando sean instanceadas :o
-int get_relaxed_weight(const int (&arr)[rows][columns]){
-    std::array <int, columns> chosen_indexes;
+int get_relaxed_weight(const std::vector<std::vector<int>>& matrix){
     int max_weight = std::numeric_limits<int>::max();
     int relaxed_weight = 0;
 
-    for(int i = 0; i < columns; ++i){
+    for(int i = 0; i < matrix.size(); ++i){
         int relaxed_col = max_weight;
-        for(int j = 0; j < rows; ++j){
-            if(arr[i][j] <= relaxed_col && arr[i][j] != 0)
-                relaxed_col = arr[i][j]; 
+        for(int j = 0; j < matrix.size(); ++j){
+            if(matrix[i][j] <= relaxed_col && matrix[i][j] != 0)
+                relaxed_col = matrix[i][j]; 
         }
         relaxed_weight += relaxed_col; 
     }
@@ -65,20 +62,18 @@ bool in_array(int value, const std::vector<int>& arr){
     return false;
 }
 
-// std::array <int, rows> get_hamiltonian_cycle(const int (&arr)[rows][columns]){
-template <int columns, int rows>
-int get_hamiltonian_cycle(const int (&arr)[rows][columns]){
+int get_hamiltonian_cycle(const std::vector<std::vector<int>>& matrix){
     int max_weight = std::numeric_limits<int>::max();
     int result = 0;
     std::vector<int> chosenColumns;
 
-    for(int i = 0; i < rows; ++i){  
+    for(int i = 0; i < matrix.size(); ++i){  
         int weight = max_weight;
         int col = 0;
-        for(int j = 0; j < columns; ++j){
-            if(arr[i][j] <= weight  && arr[i][j] != 0 && !in_array(j, chosenColumns)){
+        for(int j = 0; j < matrix.size(); ++j){
+            if(matrix[i][j] <= weight  && matrix[i][j] != 0 && !in_array(j, chosenColumns)){
                 col = j;
-                weight = arr[i][j];
+                weight = matrix[i][j];
             }
         }
         chosenColumns.push_back(col);
@@ -91,21 +86,20 @@ int get_hamiltonian_cycle(const int (&arr)[rows][columns]){
     return result;
 }
 
-template <int columns, int rows>
-void print_2D_array(const int (&arr)[rows][columns]){
-    for(int i = 0; i < rows; ++i){
-            for(int j = 0; j < columns; ++j)
-                std::cout<<arr[i][j]<<" ";
+void print_matrix(const std::vector<std::vector<int>>& matrix){
+    for(int i = 0; i < matrix.size(); ++i){
+            for(int j = 0; j < matrix.size(); ++j)
+                std::cout<<matrix[i][j]<<" ";
             std::cout<<std::endl;
     }
 }
 
 
 int main() {
-    int A[5][5];
+    // int A[5][5];
 
     std::cout<< "Matrix: " <<std::endl;
-    print_2D_array(test_arr);
+    print_matrix(test_arr);
 
     std::cout<< "Relaxed Weight: " <<std::endl;
     std::cout <<  get_relaxed_weight(test_arr) << std::endl; 
